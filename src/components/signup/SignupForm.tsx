@@ -39,21 +39,40 @@ export default function SignupForm() {
 
       console.log(sendingDataObject);
 
+      // try {
+      //   const response = await fetch(
+      //     `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/signup`,
+      //     {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json',
+      //       },
+      //       body: JSON.stringify(sendingDataObject),
+      //     }
+      //   );
+
+      //   if (!response.ok) {
+      //     throw new Error('Sign up failed!');
+      //   }
+      // } catch (error) {
+      //   alert(error);
+      // }
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/signup`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(sendingDataObject),
-          }
-        );
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sendingDataObject),
+        });
 
         if (!response.ok) {
           throw new Error('Sign up failed!');
         }
+
+        const data = await response.json();
+
+        console.log(data);
       } catch (error) {
         alert(error);
       }

@@ -20,19 +20,33 @@ export default function LoginForm() {
       };
 
       console.log(sendingDataObject);
+      // try {
+      //   const response = await fetch(
+      //     `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/login`,
+      //     {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json',
+      //       },
+      //       body: JSON.stringify(sendingDataObject),
+      //     }
+      //   );
+
+      //   const data = await response.json();
+      // } catch (error) {
+      //   alert(error);
+      // }
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/login`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(sendingDataObject),
-          }
-        );
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sendingDataObject),
+        });
 
         const data = await response.json();
+        console.log(data);
       } catch (error) {
         alert(error);
       }
