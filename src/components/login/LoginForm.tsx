@@ -22,7 +22,6 @@ export default function LoginForm() {
         password: userPasswordValue,
       };
 
-      console.log(sendingDataObject);
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/login`,

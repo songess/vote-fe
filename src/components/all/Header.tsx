@@ -13,8 +13,6 @@ export function Header() {
     setUsername(localStorage.getItem('username'));
   }, []);
 
-  console.log(part);
-  console.log(username);
   return (
     <header className="w-full h-[80px] bg-white flex justify-between items-center px-[20px] absolute top-0 left-0">
       <h1
