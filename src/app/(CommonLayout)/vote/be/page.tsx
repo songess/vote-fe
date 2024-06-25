@@ -29,7 +29,7 @@ export default function Page() {
   // 사용자의 상태는 크게 3가지이다. FE, BE, null(가입도 안한 경우에 투표 페이지 접근)
   const [part, setPart] = useState<string>('BE');
 
-  const handleSubmit = async () => {
+  const handleSubmitBackendVote = async () => {
     // const cookie = cookies();
     // const token = cookie.get('token');
 
@@ -125,7 +125,7 @@ export default function Page() {
         결과보기 ▶︎
       </div>
       <button
-        onClick={handleSubmit}
+        onClick={handleSubmitBackendVote}
         className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
           isVoted || part !== 'BE' || votedIdx === -1
             ? 'opacity-50 cursor-not-allowed'

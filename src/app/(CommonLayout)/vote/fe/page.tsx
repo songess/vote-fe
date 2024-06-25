@@ -26,7 +26,7 @@ export default function Page() {
   const [isVoted, setIsVoted] = useState<boolean>(false);
   const [part, setPart] = useState<string>('FE');
 
-  const handleSubmit = async () => {
+  const handleSubmitFrontendVote = async () => {
     const token = 'token';
 
     try {
@@ -121,7 +121,7 @@ export default function Page() {
         결과보기 ▶︎
       </div>
       <button
-        onClick={handleSubmit}
+        onClick={handleSubmitFrontendVote}
         className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
           isVoted || part !== 'FE' || votedIdx === -1
             ? 'opacity-50 cursor-not-allowed'

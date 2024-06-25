@@ -96,6 +96,7 @@ export default function TeamPage() {
         결과보기 ▶︎
       </div>
       <button
+        onClick={handleSubmitTeamVote}
         className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
           isVoted || TeamName[votedIdx] === team || votedIdx === -1
             ? 'opacity-50 cursor-not-allowed'
