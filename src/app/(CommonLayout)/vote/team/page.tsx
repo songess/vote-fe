@@ -64,6 +64,8 @@ export default function TeamPage() {
 
     if (localStorageToken !== null) {
       getTeamData();
+    } else {
+      return;
     }
   }, []);
   const router = useRouter();
@@ -87,11 +89,17 @@ export default function TeamPage() {
               idx === votedIdx ? 'border-2 border-themeColor' : ''
             }`}
             onClick={() => {
-              if (TeamName[idx] === team) {
-                alert('본인이 속한 팀에는 투표할 수 없습니다!');
+              if (isVoted === 1) {
+                alert('이미 투표를 진행하셨습니다!');
                 return;
+              } else if (team === null) {
+                alert('로그인하지 않은 사용자는 투표할 수 없습니다!');
+                return;
+              } else if (TeamName[idx] === team) {
+                alert('본인이 속한 팀에는 투표할 수 없습니다!');
+              } else {
+                setVotedIdx(idx);
               }
-              setVotedIdx(idx);
             }}
           >
             {name}
@@ -107,19 +115,26 @@ export default function TeamPage() {
       >
         결과보기 ▶︎
       </div>
-      <button
-        onClick={handleSubmitTeamVote}
-        className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
-          isVoted || TeamName[votedIdx] === team || votedIdx === -1
-            ? 'opacity-50 cursor-not-allowed'
-            : ''
-        }`}
-        disabled={
-          isVoted === 1 || TeamName[votedIdx] === team || votedIdx === -1
-        }
-      >
-        투표하기
-      </button>
+
+      {isVoted === 1 ? (
+        <button
+          className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold opacity-50 cursor-not-allowed`}
+        >
+          투표 완료
+        </button>
+      ) : (
+        <button
+          onClick={handleSubmitTeamVote}
+          className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
+            isVoted || TeamName[votedIdx] === team || votedIdx === -1
+              ? 'opacity-50 cursor-not-allowed'
+              : ''
+          }`}
+          disabled={TeamName[votedIdx] === team || votedIdx === -1}
+        >
+          투표하기
+        </button>
+      )}
     </div>
   );
 }
