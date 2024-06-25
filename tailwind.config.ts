@@ -15,6 +15,9 @@ const config: Config = {
         backgroundColor: '#F9F9F9',
         orColor: '#d9d9d9',
       },
+      boxShadow: {
+        teamBoxShadow: '0px 1px 6px 0px rgba(0, 0, 0, 0.25);',
+      },
     },
   },
   plugins: [],
