@@ -4,7 +4,7 @@ import { Header } from '@components/all/Header';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { voteFetchWithToken } from '@apis/fetchAPI';
-import { cookies } from 'next/headers';
+// import { cookies } from 'next/headers';
 
 const CandidateName = [
   '임형준',
@@ -19,44 +19,70 @@ const CandidateName = [
   '권찬',
 ];
 
+// 일단 프론트엔드 사용자가 백엔드 투표에 들어왔다는 것을 상정한 투표
 const DUMMYRESPONSE = { isVoted: false, status: 'FE' };
 
 export default function Page() {
   const router = useRouter();
   const [votedIdx, setVotedIdx] = useState<number>(-1);
   const [isVoted, setIsVoted] = useState<boolean>(false);
-  const [status, setStatus] = useState<string>('FE');
+  // 사용자의 상태는 크게 3가지이다. FE, BE, null(가입도 안한 경우에 투표 페이지 접근)
+  const [part, setPart] = useState<string>('BE');
 
   const handleSubmit = async () => {
-    const cookie = cookies();
-    const token = cookie.get('token');
+    // const cookie = cookies();
+    // const token = cookie.get('token');
+
+    const token = 'token';
 
     try {
-      const response = await voteFetchWithToken.post(
-        '/vote/fe',
-        { leaderName: CandidateName[votedIdx], userName: 'name' },
-        token
+      // const response = await voteFetchWithToken.post(
+      //   '/vote/fe',
+      //   { leaderName: CandidateName[votedIdx], userName: 'name' },
+      //   token
+      // );
+      const sendingDataObject = {
+        leaderName: CandidateName[votedIdx],
+        username: 'name',
+      };
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/be-vote`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sendingDataObject),
+        }
       );
       if (response.ok) {
-        alert('투표가 완료되었습니다.');
-        router.push('/vote/fe-result');
+        alert('백엔드 투표가 완료되었습니다.');
+        router.push('/vote/be-result');
+      } else {
+        throw new Error('백엔드 투표에 실패했습니다.');
       }
     } catch (e) {
-      console.error(e);
+      console.log(e);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const cookie = cookies();
-      const token = cookie.get('token');
+      // const cookie = cookies();
+      // const token = cookie.get('token');
 
       try {
-        const response = await voteFetchWithToken.get('/vote/fe', token);
+        // const response = await voteFetchWithToken.get('/vote/fe', token);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe`,
+          {
+            method: 'POST',
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           setIsVoted(data.isVoted);
-          setStatus(data.status);
+          setPart(data.status);
         }
       } catch (e) {
         console.error(e);
@@ -101,11 +127,11 @@ export default function Page() {
       <button
         onClick={handleSubmit}
         className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
-          isVoted || status !== 'FE' || votedIdx === -1
+          isVoted || part !== 'BE' || votedIdx === -1
             ? 'opacity-50 cursor-not-allowed'
             : ''
         }`}
-        disabled={isVoted || status !== 'BE' || votedIdx === -1}
+        disabled={isVoted || part !== 'BE' || votedIdx === -1}
       >
         {DUMMYRESPONSE.isVoted ? '투표완료' : '투표하기'}
       </button>

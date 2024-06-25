@@ -1,10 +1,9 @@
-"use client";
+'use client';
 import ArrowBackSVG from '@public/arrowBack.svg';
 import { Header } from '@components/all/Header';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { voteFetchWithToken } from '@apis/fetchAPI';
-// import { cookies } from 'next/headers';
 
 const CandidateName = [
   '김다희',
@@ -25,22 +24,36 @@ export default function Page() {
   const router = useRouter();
   const [votedIdx, setVotedIdx] = useState<number>(-1);
   const [isVoted, setIsVoted] = useState<boolean>(false);
-  const [status, setStatus] = useState<string>('FE');
+  const [part, setPart] = useState<string>('FE');
 
   const handleSubmit = async () => {
-    // const cookie = cookies();
-    // const token = cookie.get('token');
     const token = 'token';
 
     try {
-      const response = await voteFetchWithToken.post(
-        '/vote/fe',
-        { leaderName: CandidateName[votedIdx], userName: 'name' },
-        token
+      // const response = await voteFetchWithToken.post(
+      //   '/vote/fe',
+      //   { leaderName: CandidateName[votedIdx], userName: 'name' },
+      //   token
+      // );
+      const sendingDataObject = {
+        leaderName: CandidateName[votedIdx],
+        username: 'name',
+      };
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe-vote`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sendingDataObject),
+        }
       );
       if (response.ok) {
-        alert('투표가 완료되었습니다.');
+        alert('프론트엔드 투표가 완료되었습니다.');
         router.push('/vote/fe-result');
+      } else {
+        throw new Error('프론트엔드 투표에 실패했습니다. ');
       }
     } catch (e) {
       console.error(e);
@@ -48,17 +61,24 @@ export default function Page() {
   };
 
   useEffect(() => {
+    // 아래 함수에서 post 요청으로 jwt를 싣어보내 사용자가 투표했는지, 소속은 어디인지 확인할 수 있어야함. 추후에 이를 isVoted, status 상태와 엮어준다
     const fetchData = async () => {
-      // const cookie = cookies();
-      // const token = cookie.get('token');
       const token = 'token';
 
       try {
-        const response = await voteFetchWithToken.get('vote/fe', token);
+        // const response = await voteFetchWithToken.get('vote/fe', token);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe`,
+          {
+            method: 'POST',
+          }
+        );
         if (response.ok) {
           const data = await response.json();
+          console.log(data);
+          //data.result 필드를 통해 접근해야함
           setIsVoted(data.isVoted);
-          setStatus(data.status);
+          setPart(data.status);
         }
       } catch (e) {
         console.error(e);
@@ -80,7 +100,7 @@ export default function Page() {
       <section className="flex flex-wrap gap-[30px] w-full">
         {CandidateName.map((name, idx) => (
           <button
-            key={idx}
+            key={name}
             onClick={() => {
               setVotedIdx(idx);
             }}
@@ -103,17 +123,11 @@ export default function Page() {
       <button
         onClick={handleSubmit}
         className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
-          isVoted ||
-          status !== 'FE' ||
-          votedIdx === -1
+          isVoted || part !== 'FE' || votedIdx === -1
             ? 'opacity-50 cursor-not-allowed'
             : ''
         }`}
-        disabled={
-          isVoted ||
-          status !== 'FE' ||
-          votedIdx === -1
-        }
+        disabled={isVoted || part !== 'FE' || votedIdx === -1}
       >
         {DUMMYRESPONSE.isVoted ? '투표완료' : '투표하기'}
       </button>

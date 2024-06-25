@@ -159,9 +159,9 @@ export default function SignupForm() {
         <select name="userTeam" className="w-full h-8" required ref={teamRef}>
           <option value="1">AZITO</option>
           <option value="2">BEATBUDDY</option>
-          <option value="3">TIG</option>
-          <option value="4">BULDOG</option>
-          <option value="5">COUPLELOG</option>
+          <option value="3">BULDOG</option>
+          <option value="4">COUPLELOG</option>
+          <option value="5">TIG</option>
         </select>
       </div>
 
