@@ -43,7 +43,14 @@ export default function TeamPage() {
   useEffect(() => {
     async function getTeamData() {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/team`
+        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/team`,
+        {
+          method: 'POST',
+          headers: {
+            // Authorization: `Bearer ${token}`,
+          },
+          credentials: 'include',
+        }
       );
 
       const data = await response.json();

@@ -1,9 +1,12 @@
 'use client';
 import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
   const idRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  const router = useRouter();
 
   async function handleSubmitLoginForm(
     event: React.FormEvent<HTMLFormElement>
@@ -20,33 +23,35 @@ export default function LoginForm() {
       };
 
       console.log(sendingDataObject);
-      // try {
-      //   const response = await fetch(
-      //     `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/login`,
-      //     {
-      //       method: 'POST',
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //       },
-      //       body: JSON.stringify(sendingDataObject),
-      //     }
-      //   );
-
-      //   const data = await response.json();
-      // } catch (error) {
-      //   alert(error);
-      // }
       try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(sendingDataObject),
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/login`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(sendingDataObject),
+          }
+        );
 
-        const data = await response.json();
-        console.log(data);
+        if (!response.ok) {
+          throw new Error('Login error');
+        } else {
+          const headers = response.headers;
+
+          // 일단 타입 단언으로 오류를 뜷어주기
+          const jwtToken = headers.get('Authorization') as string;
+
+          const { part, username } = await response.json();
+
+          localStorage.setItem('jwtToken', jwtToken);
+          localStorage.setItem('part', part);
+          localStorage.setItem('username', username);
+
+          router.push('/');
+        }
       } catch (error) {
         alert(error);
       }
