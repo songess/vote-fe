@@ -10,14 +10,6 @@ interface teamProp {
   voteCount: number;
 }
 
-const DUMMYTEAMRANKING: teamProp[] = [
-  { teamName: 'AZITO', voteCount: 10 },
-  { teamName: 'BEATBUDDY', voteCount: 9 },
-  { teamName: 'TIG', voteCount: 8 },
-  { teamName: 'BULDOG', voteCount: 7 },
-  { teamName: 'COUPLELOG', voteCount: 6 },
-];
-
 export default function TeamResultPage() {
   const [teamState, setTeamState] = useState<teamProp[]>([]);
 
@@ -27,13 +19,29 @@ export default function TeamResultPage() {
         `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/team-result`
       );
 
-      const data = await response.json();
-      console.log(data);
+      const data: teamProp[] = await response.json();
+
+      const tmpData: teamProp[] = data.sort((a, b) => {
+        if (a.voteCount === b.voteCount) {
+          // voteCount가 같을 경우, teamName으로 알파벳 순 정렬
+          return a.teamName.localeCompare(b.teamName);
+        }
+        // voteCount 내림차순 정렬
+        return b.voteCount - a.voteCount;
+      });
+
+      setTeamState(tmpData);
     }
 
     getTeamResultData();
   }, []);
+
   const router = useRouter();
+
+  // 대체 UI임 : 첫 렌더링 시에 보이지 않는 문제를 해결하기 위함임
+  if (teamState.length === 0) {
+    return null;
+  }
   return (
     <div className="flex flex-col w-full h-full relative px-5 pt-[120px] items-center">
       <Header />
@@ -47,11 +55,11 @@ export default function TeamResultPage() {
         <div className="absolute top-[-24px] left-[-18px]">
           <CrownSVG />
         </div>
-        {DUMMYTEAMRANKING[0].teamName}
+        {teamState[0].teamName}
       </div>
-      <div className="my-[10px]">{DUMMYTEAMRANKING[0].voteCount}표</div>
+      <div className="my-[10px]">{teamState[0].voteCount}표</div>
       <section className="w-full bg-white rounded-t-xl overflow-y-scroll">
-        {DUMMYTEAMRANKING.slice(1).map((team, idx) => {
+        {teamState.slice(1).map((team, idx) => {
           return (
             <div
               key={team.teamName}

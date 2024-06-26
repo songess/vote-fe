@@ -1,5 +1,6 @@
 'use client';
 import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SignupForm() {
   const idRef = useRef<HTMLInputElement>(null);
@@ -8,6 +9,8 @@ export default function SignupForm() {
   const emailRef = useRef<HTMLInputElement>(null);
   const partRef = useRef<HTMLSelectElement>(null);
   const teamRef = useRef<HTMLSelectElement>(null);
+  const router = useRouter();
+
   async function handleSubmitSignupForm(
     event: React.FormEvent<HTMLFormElement>
   ) {
@@ -37,45 +40,46 @@ export default function SignupForm() {
         teamId: userTeamValue,
       };
 
-      console.log(sendingDataObject);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/signup`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(sendingDataObject),
+          }
+        );
 
+        if (!response.ok) {
+          throw new Error('Sign up failed!');
+        } else {
+          router.push('/login');
+        }
+      } catch (error) {
+        alert(error);
+      }
       // try {
-      //   const response = await fetch(
-      //     `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/signup`,
-      //     {
-      //       method: 'POST',
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //       },
-      //       body: JSON.stringify(sendingDataObject),
-      //     }
-      //   );
+      //   const response = await fetch('/api/signup', {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify(sendingDataObject),
+      //   });
 
       //   if (!response.ok) {
       //     throw new Error('Sign up failed!');
       //   }
+
+      //   const data = await response.json();
+
+      //   console.log(data);
       // } catch (error) {
       //   alert(error);
       // }
-      try {
-        const response = await fetch('/api/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(sendingDataObject),
-        });
-
-        if (!response.ok) {
-          throw new Error('Sign up failed!');
-        }
-
-        const data = await response.json();
-
-        console.log(data);
-      } catch (error) {
-        alert(error);
-      }
     }
   }
 

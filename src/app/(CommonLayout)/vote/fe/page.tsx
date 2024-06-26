@@ -75,7 +75,7 @@ export default function Page() {
         );
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+
           //data.result 필드를 통해 접근해야함
           setIsVoted(data.isVoted);
           setPart(data.status);

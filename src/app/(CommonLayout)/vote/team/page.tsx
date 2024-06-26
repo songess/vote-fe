@@ -8,14 +8,14 @@ const TeamName = ['AZITO', 'BEATBUDDY', 'TIG', 'BULDOG', 'COUPLELOG'];
 
 export default function TeamPage() {
   const [votedIdx, setVotedIdx] = useState<number>(-1);
-  const [isVoted, setIsVoted] = useState<boolean>(false);
-  const [team, setTeam] = useState<string | null>('TIG'); // 일단 임시 데이터 TIG
+  const [isVoted, setIsVoted] = useState<0 | 1>(0); // 투표를 안했으면 0 했으면 1
+  const [team, setTeam] = useState<string | null>(null); // 일단 임시 데이터 TIG
 
   const handleSubmitTeamVote = async () => {
     try {
       const sendingDataObject = {
         teamName: TeamName[votedIdx],
-        username: 'name', // 임시 이름임. 로컬 스토리지에서 꺼내 쓸 예정ㄴ
+        username: localStorage.getItem('username'), // 임시 이름임. 로컬 스토리지에서 꺼내 쓸 예정ㄴ
       };
 
       const response = await fetch(
@@ -24,6 +24,7 @@ export default function TeamPage() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
           },
           body: JSON.stringify(sendingDataObject),
         }
@@ -41,18 +42,31 @@ export default function TeamPage() {
 
   // 백엔드로부터 해당 유저의 상태를 쿠키나 로컬 스토리지에 있는 jwt를 이용하여 받아오고, 이를 상태와 연결하는 side effect
   useEffect(() => {
+    const localStorageToken = localStorage.getItem('jwtToken');
     async function getTeamData() {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/team`
+        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/team`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${localStorageToken}`,
+          },
+          credentials: 'include',
+        }
       );
 
       const data = await response.json();
 
       // 이거를 기반으로 팀 이름 상태와 투표 했는지 상태가 연동되어야 함
-      console.log(data);
+      setTeam(data.result.status);
+      setIsVoted(data.result.isVoted);
     }
 
-    getTeamData();
+    if (localStorageToken !== null) {
+      getTeamData();
+    } else {
+      return;
+    }
   }, []);
   const router = useRouter();
   return (
@@ -75,11 +89,17 @@ export default function TeamPage() {
               idx === votedIdx ? 'border-2 border-themeColor' : ''
             }`}
             onClick={() => {
-              if (TeamName[idx] === team) {
-                alert('본인이 속한 팀에는 투표할 수 없습니다!');
+              if (isVoted === 1) {
+                alert('이미 투표를 진행하셨습니다!');
                 return;
+              } else if (team === null) {
+                alert('로그인하지 않은 사용자는 투표할 수 없습니다!');
+                return;
+              } else if (TeamName[idx] === team) {
+                alert('본인이 속한 팀에는 투표할 수 없습니다!');
+              } else {
+                setVotedIdx(idx);
               }
-              setVotedIdx(idx);
             }}
           >
             {name}
@@ -95,17 +115,26 @@ export default function TeamPage() {
       >
         결과보기 ▶︎
       </div>
-      <button
-        onClick={handleSubmitTeamVote}
-        className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
-          isVoted || TeamName[votedIdx] === team || votedIdx === -1
-            ? 'opacity-50 cursor-not-allowed'
-            : ''
-        }`}
-        disabled={isVoted || TeamName[votedIdx] === team || votedIdx === -1}
-      >
-        투표하기
-      </button>
+
+      {isVoted === 1 ? (
+        <button
+          className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold opacity-50 cursor-not-allowed`}
+        >
+          투표 완료
+        </button>
+      ) : (
+        <button
+          onClick={handleSubmitTeamVote}
+          className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
+            isVoted || TeamName[votedIdx] === team || votedIdx === -1
+              ? 'opacity-50 cursor-not-allowed'
+              : ''
+          }`}
+          disabled={TeamName[votedIdx] === team || votedIdx === -1}
+        >
+          투표하기
+        </button>
+      )}
     </div>
   );
 }

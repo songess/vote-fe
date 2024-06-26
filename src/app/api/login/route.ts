@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
   const { loginId, password } = await req.json();
   const sendingDataObject = { loginId: loginId, password: password };
-  console.log(sendingDataObject);
+
   try {
     const tmpResponse = await fetch(
       'http://43.202.139.24:8080/api/user/login',
