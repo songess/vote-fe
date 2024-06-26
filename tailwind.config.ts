@@ -18,6 +18,9 @@ const config: Config = {
       boxShadow: {
         teamBoxShadow: '0px 1px 6px 0px rgba(0, 0, 0, 0.25);',
       },
+      fontFamily: {
+        pretendard: ['var(--font-pretendard)'],
+      },
     },
   },
   plugins: [],
