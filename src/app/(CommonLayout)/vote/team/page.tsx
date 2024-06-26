@@ -90,13 +90,13 @@ export default function TeamPage() {
             }`}
             onClick={() => {
               if (isVoted === 1) {
-                alert('이미 투표를 진행하셨습니다!');
+                router.push('/vote/modal/already-vote');
                 return;
               } else if (team === null) {
-                alert('로그인하지 않은 사용자는 투표할 수 없습니다!');
+                router.push('/vote/modal/need-login');
                 return;
               } else if (TeamName[idx] === team) {
-                alert('본인이 속한 팀에는 투표할 수 없습니다!');
+                router.push('/vote/modal/vote-self');
               } else {
                 setVotedIdx(idx);
               }
