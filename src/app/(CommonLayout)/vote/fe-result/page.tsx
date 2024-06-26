@@ -12,45 +12,45 @@ interface Candidate {
   voteCount: number;
 }
 
-const DUMMYCANDIDATERANKING: Candidate[] = [
-  { leaderName: '김다희', voteCount: 10 },
-  { leaderName: '김동혁', voteCount: 9 },
-  { leaderName: '김민영', voteCount: 8 },
-  { leaderName: '김수현', voteCount: 7 },
-  { leaderName: '김승완', voteCount: 6 },
-  { leaderName: '송은수', voteCount: 5 },
-  { leaderName: '안혜연', voteCount: 4 },
-  { leaderName: '이나현', voteCount: 3 },
-  { leaderName: '이지인', voteCount: 2 },
-  { leaderName: '조유담', voteCount: 1 },
-];
-
 export default function Page() {
   const router = useRouter();
-  const [candidateRanking, setCandidateRanking] = useState<Candidate[]>(
-    DUMMYCANDIDATERANKING
-  );
+  const [candidateRanking, setCandidateRanking] = useState<Candidate[]>([]);
+
+  let rankingIndex = 1;
+  let count = 1;
+
+  const rankingIndexes = candidateRanking.map((candidate, idx) => {
+    if (
+      idx < candidateRanking.length - 1 &&
+      candidate.voteCount !== candidateRanking[idx + 1].voteCount
+    ) {
+      const temp = rankingIndex;
+      rankingIndex += count;
+      count = 1;
+      return temp;
+    } else {
+      count++;
+      return rankingIndex;
+    }
+  });
+
+  if (count > 1) {
+    rankingIndexes[rankingIndexes.length - 1] = rankingIndex;
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = 'token';
-
-      try {
-        const response = await voteFetchWithToken.get('/vote/fe-result', token);
-        if (response.ok) {
-          const data = await response.json();
-          if (data) {
-            setCandidateRanking(data);
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchData();
+    async function getPartResultData() {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe-result`
+      );
+      const data: Candidate[] = await response.json();
+      setCandidateRanking(data);
+    }
+    getPartResultData();
   }, []);
+  
   return (
-    <div className="flex flex-col w-full h-full relative px-5 pt-[120px] items-center">
+    <div className="flex flex-col w-full h-full relative px-[30px] pt-[120px] items-center">
       <Header />
       <ArrowBackSVG
         className="absolute top-[120px] left-[25px] cursor-pointer"
@@ -58,21 +58,23 @@ export default function Page() {
           router.back();
         }}
       />
-      <div className="w-[120px] h-[120px] bg-white flex justify-center items-center rounded-full text-[24px] font-semibold relative">
+      <div className="w-[110px] h-[120px] bg-white flex justify-center items-center rounded-full text-[24px] font-semibold relative">
         <div className="absolute top-[-24px] left-[-18px]">
           <CrownSVG />
         </div>
-        {candidateRanking[0].leaderName}
+        {candidateRanking[0] && candidateRanking[0].leaderName}
       </div>
-      <div className="my-[10px]">{candidateRanking[0].voteCount}표</div>
+      <div className="my-[10px]">{candidateRanking[0] && candidateRanking[0].voteCount}표</div>
       <section className="w-full bg-white rounded-t-xl overflow-y-scroll">
         {candidateRanking.slice(1).map((candidate, idx) => {
           return (
             <div
               key={candidate.leaderName}
-              className="flex justify-between items-center w-[100%] h-[70px] text-[28px] px-[30px] border-b border-gray-200"
+              className="flex justify-between items-center w-[100%] h-[60px] text-[24px] px-[30px] border-b border-gray-200"
             >
-              <div className="basis-[40px] flex justify-center">{idx + 2}</div>
+              <div className="basis-[40px] flex justify-center">
+                {rankingIndexes[idx + 1]}
+              </div>
               <div className="flex items-center">{candidate.leaderName}</div>
               <div>{candidate.voteCount}표</div>
             </div>

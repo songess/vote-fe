@@ -28,28 +28,40 @@ const DUMMYCANDIDATERANKING: Candidate[] = [
 export default function Page() {
   const router = useRouter();
 
-  const [candidateRanking, setCandidateRanking] = useState<Candidate[]>(
-    DUMMYCANDIDATERANKING
-  );
+  const [candidateRanking, setCandidateRanking] = useState<Candidate[]>([]);
+  let rankingIndex = 1;
+  let count = 1;
+  const rankingIndexes = candidateRanking.map((candidate, idx) => {
+    if (
+      idx < candidateRanking.length - 1 &&
+      candidate.voteCount !== candidateRanking[idx + 1].voteCount
+    ) {
+      const temp = rankingIndex;
+      rankingIndex += count;
+      count = 1;
+      return temp;
+    } else {
+      count++;
+      return rankingIndex;
+    }
+  });
+
+  if (count > 1) {
+    rankingIndexes[rankingIndexes.length - 1] = rankingIndex;
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      const cookie = cookies();
-      const token = cookie.get('token');
+    async function getPartResultData() {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/be-result`
+      );
 
-      try {
-        const response = await voteFetchWithToken.get('/vote/fe-result', token);
-        if (response.ok) {
-          const data = await response.json();
-          if (data) {
-            setCandidateRanking(data);
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchData();
+      const data: Candidate[] = await response.json();
+
+      setCandidateRanking(data);
+    }
+
+    getPartResultData();
   }, []);
 
   return (
@@ -61,21 +73,23 @@ export default function Page() {
           router.back();
         }}
       />
-      <div className="w-[120px] h-[120px] bg-white flex justify-center items-center rounded-full text-[24px] font-semibold relative">
+      <div className="w-[110px] h-[120px] bg-white flex justify-center items-center rounded-full text-[24px] font-semibold relative">
         <div className="absolute top-[-24px] left-[-18px]">
           <CrownSVG />
         </div>
-        {candidateRanking[0].leaderName}
+        {candidateRanking[0] && candidateRanking[0].leaderName}
       </div>
-      <div className="my-[10px]">{candidateRanking[0].voteCount}표</div>
+      <div className="my-[10px]">{candidateRanking[0] && candidateRanking[0].voteCount}표</div>
       <section className="w-full bg-white rounded-t-xl overflow-y-scroll">
         {candidateRanking.slice(1).map((candidate, idx) => {
           return (
             <div
               key={candidate.leaderName}
-              className="flex justify-between items-center w-[100%] h-[70px] text-[28px] px-[30px] border-b border-gray-200"
+              className="flex justify-between items-center w-[100%] h-[60px] text-[24px] px-[30px] border-b border-gray-200"
             >
-              <div className="basis-[40px] flex justify-center">{idx + 2}</div>
+              <div className="basis-[40px] flex justify-center">
+                {rankingIndexes[idx + 1]}
+              </div>
               <div className="flex items-center">{candidate.leaderName}</div>
               <div>{candidate.voteCount}표</div>
             </div>

@@ -3,7 +3,6 @@ import ArrowBackSVG from '@public/arrowBack.svg';
 import { Header } from '@components/all/Header';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { voteFetchWithToken } from '@apis/fetchAPI';
 
 const CandidateName = [
   '김다희',
@@ -23,68 +22,64 @@ const DUMMYRESPONSE = { isVoted: false, status: 'FE' };
 export default function Page() {
   const router = useRouter();
   const [votedIdx, setVotedIdx] = useState<number>(-1);
-  const [isVoted, setIsVoted] = useState<boolean>(false);
-  const [part, setPart] = useState<string>('FE');
-
+  const [isVoted, setIsVoted] = useState<number>(0);
+  const [part, setPart] = useState<string | null>(null);
+  const username = typeof window !== 'undefined' ? localStorage.getItem('username') : null;
+  
   const handleSubmitFrontendVote = async () => {
-    const token = 'token';
-
     try {
-      // const response = await voteFetchWithToken.post(
-      //   '/vote/fe',
-      //   { leaderName: CandidateName[votedIdx], userName: 'name' },
-      //   token
-      // );
       const sendingDataObject = {
         leaderName: CandidateName[votedIdx],
-        username: 'name',
+        username: username
       };
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe-vote`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
           },
           body: JSON.stringify(sendingDataObject),
         }
       );
       if (response.ok) {
-        alert('프론트엔드 투표가 완료되었습니다.');
+        alert('파트장 투표가 완료되었습니다.');
         router.push('/vote/fe-result');
       } else {
-        throw new Error('프론트엔드 투표에 실패했습니다. ');
+        throw new Error('파트장 투표에 실패했습니다.');
       }
     } catch (e) {
-      console.error(e);
+      console.log(e);
     }
   };
 
   useEffect(() => {
-    // 아래 함수에서 post 요청으로 jwt를 싣어보내 사용자가 투표했는지, 소속은 어디인지 확인할 수 있어야함. 추후에 이를 isVoted, status 상태와 엮어준다
-    const fetchData = async () => {
-      const token = 'token';
-
-      try {
-        // const response = await voteFetchWithToken.get('vote/fe', token);
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe`,
-          {
-            method: 'POST',
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-
-          //data.result 필드를 통해 접근해야함
-          setIsVoted(data.isVoted);
-          setPart(data.status);
+    const localStorageToken = localStorage.getItem('jwtToken');
+    async function getTeamData() {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${localStorageToken}`,
+          },
+          credentials: 'include',
         }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchData();
+      );
+
+      const data = await response.json();
+
+      setPart(data.result.status);
+      setIsVoted(data.result.isVoted);
+    }
+
+    if (localStorageToken !== null) {
+      getTeamData();
+    } else {
+      return;
+    }
   }, []);
 
   return (
@@ -97,14 +92,24 @@ export default function Page() {
         }}
       />
       <h1 className="py-[30px] text-[28px]">FE 파트장 투표</h1>
-      <section className="flex flex-wrap gap-[30px] w-full">
+      <section className="flex flex-wrap gap-[20px] w-full">
         {CandidateName.map((name, idx) => (
           <button
             key={name}
             onClick={() => {
-              setVotedIdx(idx);
+              if (isVoted === 1) {
+                alert('이미 투표를 진행하셨습니다!');
+                return;
+              } else if (part === null) {
+                alert('로그인하지 않은 사용자는 투표할 수 없습니다!');
+                return;
+              } else if (CandidateName[idx] === username) {
+                alert('본인한테는 투표할 수 없습니다!');
+              } else {
+                setVotedIdx(idx);
+              }
             }}
-            className={`basis-[calc(50%-15px)] h-[70px] bg-white rounded-[10px] flex justify-center items-center shadow-md text-[28px] font-semibold ${
+            className={`basis-[calc(50%-10px)] h-[60px] bg-white rounded-[10px] flex justify-center items-center shadow-md text-[24px] font-semibold ${
               idx === votedIdx ? 'border-2 border-themeColor' : ''
             }`}
           >
@@ -122,12 +127,12 @@ export default function Page() {
       </div>
       <button
         onClick={handleSubmitFrontendVote}
-        className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
-          isVoted || part !== 'FE' || votedIdx === -1
+        className={`bg-themeColor text-white w-full h-[60px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
+          isVoted === 1 || part !== 'FRONTEND' || votedIdx === -1
             ? 'opacity-50 cursor-not-allowed'
             : ''
         }`}
-        disabled={isVoted || part !== 'FE' || votedIdx === -1}
+        disabled={isVoted === 1 || part !== 'FRONTEND' || votedIdx === -1}
       >
         {DUMMYRESPONSE.isVoted ? '투표완료' : '투표하기'}
       </button>
