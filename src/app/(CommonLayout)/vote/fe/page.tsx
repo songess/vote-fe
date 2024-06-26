@@ -24,26 +24,24 @@ export default function Page() {
   const [votedIdx, setVotedIdx] = useState<number>(-1);
   const [isVoted, setIsVoted] = useState<number>(0);
   const [part, setPart] = useState<string | null>(null);
-  const username = typeof window !== 'undefined' ? localStorage.getItem('username') : null;
-  
+  const username =
+    typeof window !== 'undefined' ? localStorage.getItem('username') : null;
+
   const handleSubmitFrontendVote = async () => {
     try {
       const sendingDataObject = {
         leaderName: CandidateName[votedIdx],
-        username: username
+        username: username,
       };
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe-vote`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-          body: JSON.stringify(sendingDataObject),
-        }
-      );
+      const response = await fetch('/api/vote/fe-vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+        body: JSON.stringify(sendingDataObject),
+      });
       if (response.ok) {
         alert('파트장 투표가 완료되었습니다.');
         router.push('/vote/fe-result');
@@ -58,16 +56,13 @@ export default function Page() {
   useEffect(() => {
     const localStorageToken = localStorage.getItem('jwtToken');
     async function getTeamData() {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${localStorageToken}`,
-          },
-          credentials: 'include',
-        }
-      );
+      const response = await fetch('/api/vote/fe', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorageToken}`,
+        },
+        credentials: 'include',
+      });
 
       const data = await response.json();
 

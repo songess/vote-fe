@@ -18,17 +18,14 @@ export default function TeamPage() {
         username: localStorage.getItem('username'), // 임시 이름임. 로컬 스토리지에서 꺼내 쓸 예정ㄴ
       };
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/team-vote`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-          body: JSON.stringify(sendingDataObject),
-        }
-      );
+      const response = await fetch('/api/vote/team-vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+        body: JSON.stringify(sendingDataObject),
+      });
       if (response.ok) {
         alert('팀 투표가 완료되었습니다.');
         router.push('/vote/team-result');
@@ -44,16 +41,13 @@ export default function TeamPage() {
   useEffect(() => {
     const localStorageToken = localStorage.getItem('jwtToken');
     async function getTeamData() {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/team`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${localStorageToken}`,
-          },
-          credentials: 'include',
-        }
-      );
+      const response = await fetch('/api/vote/team', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorageToken}`,
+        },
+        credentials: 'include',
+      });
 
       const data = await response.json();
 

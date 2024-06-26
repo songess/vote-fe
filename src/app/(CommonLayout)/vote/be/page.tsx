@@ -4,7 +4,6 @@ import { Header } from '@components/all/Header';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { voteFetchWithToken } from '@apis/fetchAPI';
-// import { cookies } from 'next/headers';
 
 const CandidateName = [
   '임형준',
@@ -37,17 +36,14 @@ export default function Page() {
         username: localStorage.getItem('username'), // 임시 이름임. 로컬 스토리지에서 꺼내 쓸 예정ㄴ
       };
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/be-vote`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-          body: JSON.stringify(sendingDataObject),
-        }
-      );
+      const response = await fetch('/api/vote/be-vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+        body: JSON.stringify(sendingDataObject),
+      });
       if (response.ok) {
         alert('파트장 투표가 완료되었습니다.');
         router.push('/vote/be-result');
@@ -62,16 +58,13 @@ export default function Page() {
   useEffect(() => {
     const localStorageToken = localStorage.getItem('jwtToken');
     async function getTeamData() {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/be`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${localStorageToken}`,
-          },
-          credentials: 'include',
-        }
-      );
+      const response = await fetch('/api/vote/be', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorageToken}`,
+        },
+        credentials: 'include',
+      });
 
       const data = await response.json();
 

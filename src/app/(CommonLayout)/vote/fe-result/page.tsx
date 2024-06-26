@@ -3,7 +3,6 @@ import { voteFetchWithToken } from '@apis/fetchAPI';
 import { Header } from '@components/all/Header';
 import ArrowBackSVG from '@public/arrowBack.svg';
 import CrownSVG from '@public/crown.svg';
-
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -40,15 +39,13 @@ export default function Page() {
 
   useEffect(() => {
     async function getPartResultData() {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/fe-result`
-      );
+      const response = await fetch('/api/vote/fe-result');
       const data: Candidate[] = await response.json();
       setCandidateRanking(data);
     }
     getPartResultData();
   }, []);
-  
+
   return (
     <div className="flex flex-col w-full h-full relative px-[30px] pt-[120px] items-center">
       <Header />
@@ -64,7 +61,9 @@ export default function Page() {
         </div>
         {candidateRanking[0] && candidateRanking[0].leaderName}
       </div>
-      <div className="my-[10px]">{candidateRanking[0] && candidateRanking[0].voteCount}표</div>
+      <div className="my-[10px]">
+        {candidateRanking[0] && candidateRanking[0].voteCount}표
+      </div>
       <section className="w-full bg-white rounded-t-xl overflow-y-scroll">
         {candidateRanking.slice(1).map((candidate, idx) => {
           return (

@@ -52,9 +52,7 @@ export default function Page() {
 
   useEffect(() => {
     async function getPartResultData() {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/be-result`
-      );
+      const response = await fetch('/api/vote/be-result');
 
       const data: Candidate[] = await response.json();
 
@@ -79,7 +77,9 @@ export default function Page() {
         </div>
         {candidateRanking[0] && candidateRanking[0].leaderName}
       </div>
-      <div className="my-[10px]">{candidateRanking[0] && candidateRanking[0].voteCount}표</div>
+      <div className="my-[10px]">
+        {candidateRanking[0] && candidateRanking[0].voteCount}표
+      </div>
       <section className="w-full bg-white rounded-t-xl overflow-y-scroll">
         {candidateRanking.slice(1).map((candidate, idx) => {
           return (

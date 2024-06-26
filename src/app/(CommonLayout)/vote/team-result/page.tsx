@@ -15,9 +15,7 @@ export default function TeamResultPage() {
 
   useEffect(() => {
     async function getTeamResultData() {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/vote/team-result`
-      );
+      const response = await fetch('/api/vote/team-result');
 
       const data: teamProp[] = await response.json();
 

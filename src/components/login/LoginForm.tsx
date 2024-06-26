@@ -23,17 +23,14 @@ export default function LoginForm() {
       };
 
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/login`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify(sendingDataObject),
-          }
-        );
+        const response = await fetch('/api/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(sendingDataObject),
+        });
 
         if (!response.ok) {
           throw new Error('Login error');
