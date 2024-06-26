@@ -124,7 +124,7 @@ export default function Page() {
       <div
         className="text-themeColor text-[20px] font-semibold self-end mt-[20px] grow cursor-pointer"
         onClick={() => {
-          router.push('/vote/fe-result');
+          router.push('/vote/be-result');
         }}
       >
         결과보기 ▶︎
