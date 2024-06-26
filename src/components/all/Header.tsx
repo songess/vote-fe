@@ -25,11 +25,11 @@ export function Header() {
       </h1>
       <div className="flex gap-2 items-center">
         {part && username && (
-          <span className="text-[16px]">{`${part} ${username}`}</span>
+          <span className="text-[14px]">{`${part === 'FRONTEND' ? 'FE' : 'BE'} ${username}`}</span>
         )}
         {part !== null && username !== null ? (
           <button
-            className="bg-themeColor text-white	 text-[18px] rounded-[10px] border-none w-[80px] h-[40px]"
+            className="bg-themeColor text-white	 text-[16px] rounded-[10px] border-none w-[80px] h-[40px]"
             onClick={() => {
               localStorage.removeItem('jwtToken');
               localStorage.removeItem('part');
