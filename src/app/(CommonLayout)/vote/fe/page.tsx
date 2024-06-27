@@ -93,13 +93,13 @@ export default function Page() {
             key={name}
             onClick={() => {
               if (isVoted === 1) {
-                router.push('/vote/modal/already-vote');
+                router.push('/vote/modal/already-vote', { scroll: false });
                 return;
               } else if (part === null) {
-                router.push('/vote/modal/need-login');
+                router.push('/vote/modal/need-login', { scroll: false });
                 return;
               } else if (CandidateName[idx] === username) {
-                router.push('/vote/modal/vote-self');
+                router.push('/vote/modal/vote-self', { scroll: false });
               } else {
                 setVotedIdx(idx);
               }

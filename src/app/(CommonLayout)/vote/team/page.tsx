@@ -84,14 +84,19 @@ export default function TeamPage() {
               idx === votedIdx ? 'border-2 border-themeColor' : ''
             }`}
             onClick={() => {
+              if (localStorage.getItem('jwtToken') === null) {
+                router.push('/vote/modal/need-login', { scroll: false });
+                return;
+              }
+
               if (isVoted === 1) {
-                router.push('/vote/modal/already-vote');
+                router.push('/vote/modal/already-vote', { scroll: false });
                 return;
               } else if (team === null) {
-                router.push('/vote/modal/need-login');
+                router.push('/vote/modal/need-login', { scroll: false });
                 return;
               } else if (TeamName[idx] === team) {
-                router.push('/vote/modal/vote-self');
+                router.push('/vote/modal/vote-self', { scroll: false });
                 return;
               } else {
                 setVotedIdx(idx);

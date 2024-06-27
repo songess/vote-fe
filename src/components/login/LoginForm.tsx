@@ -49,7 +49,7 @@ export default function LoginForm() {
           router.push('/');
         }
       } catch (error) {
-        router.push('/login/loginmodal');
+        router.push('/login/loginmodal', { scroll: false });
       }
     }
   }
