@@ -92,6 +92,7 @@ export default function TeamPage() {
                 return;
               } else if (TeamName[idx] === team) {
                 router.push('/vote/modal/vote-self');
+                return;
               } else {
                 setVotedIdx(idx);
               }
