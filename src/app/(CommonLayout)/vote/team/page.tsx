@@ -10,7 +10,7 @@ export default function TeamPage() {
   const [votedIdx, setVotedIdx] = useState<number>(-1);
   // const [isVoted, setIsVoted] = useState<0 | 1>(0); // 투표를 안했으면 0 했으면 1
   const [isVoted, setIsVoted] = useState<0 | 1>(0);
-  const [team, setTeam] = useState<string | null>(''); // 일단 임시 데이터 TIG
+  const [team, setTeam] = useState<string | null>(null); // 일단 임시 데이터 TIG
 
   const handleSubmitTeamVote = async () => {
     try {
