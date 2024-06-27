@@ -76,7 +76,7 @@ export default function TeamPage() {
 
       <h1 className="py-[30px] text-[28px]">TEAM 투표</h1>
 
-      <section className="flex flex-col items-center gap-y-[30px] w-full h-fit">
+      <section className="flex flex-col items-center gap-y-[20px] w-full h-fit">
         {TeamName.map((name, idx) => (
           <div
             key={name}
@@ -119,14 +119,14 @@ export default function TeamPage() {
 
       {isVoted === 1 ? (
         <button
-          className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold opacity-50 cursor-not-allowed`}
+          className={`bg-themeColor text-white w-full h-[60px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold opacity-50 cursor-not-allowed`}
         >
           투표 완료
         </button>
       ) : (
         <button
           onClick={handleSubmitTeamVote}
-          className={`bg-themeColor text-white w-full h-[70px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
+          className={`bg-themeColor text-white w-full h-[60px] rounded-[10px] mt-[20px] mb-[40px] text-[28px] font-semibold ${
             isVoted || TeamName[votedIdx] === team || votedIdx === -1
               ? 'opacity-50 cursor-not-allowed'
               : ''
