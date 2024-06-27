@@ -1,5 +1,6 @@
 'use client';
 import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SignupForm() {
   const idRef = useRef<HTMLInputElement>(null);
@@ -8,6 +9,8 @@ export default function SignupForm() {
   const emailRef = useRef<HTMLInputElement>(null);
   const partRef = useRef<HTMLSelectElement>(null);
   const teamRef = useRef<HTMLSelectElement>(null);
+  const router = useRouter();
+
   async function handleSubmitSignupForm(
     event: React.FormEvent<HTMLFormElement>
   ) {
@@ -37,22 +40,20 @@ export default function SignupForm() {
         teamId: userTeamValue,
       };
 
-      console.log(sendingDataObject);
-
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_DOMAIN}/api/user/signup`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(sendingDataObject),
-          }
-        );
+        const response = await fetch('/api/user/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(sendingDataObject),
+        });
 
         if (!response.ok) {
           throw new Error('Sign up failed!');
+        } else {
+          router.push('/login');
         }
       } catch (error) {
         alert(error);
@@ -63,7 +64,7 @@ export default function SignupForm() {
   return (
     <form
       action=""
-      className="w-full h-fit flex flex-col gap-y-5 items-center relative mb-4"
+      className="w-full h-fit flex flex-col gap-y-4 items-center relative mb-4"
       onSubmit={handleSubmitSignupForm}
     >
       <div className="loginSignupItem">
@@ -140,9 +141,9 @@ export default function SignupForm() {
         <select name="userTeam" className="w-full h-8" required ref={teamRef}>
           <option value="1">AZITO</option>
           <option value="2">BEATBUDDY</option>
-          <option value="3">TIG</option>
-          <option value="4">BULDOG</option>
-          <option value="5">COUPLELOG</option>
+          <option value="3">BULDOG</option>
+          <option value="4">COUPLELOG</option>
+          <option value="5">TIG</option>
         </select>
       </div>
 

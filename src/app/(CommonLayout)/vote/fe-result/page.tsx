@@ -3,29 +3,28 @@ import { Header } from '@components/all/Header';
 import ArrowBackSVG from '@public/arrowBack.svg';
 import CrownSVG from '@public/crown.svg';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { type Candidate } from 'types/CandidateType';
+import useRanking from '@utils/useRanking';
 
-interface Candidate {
-	name: string;
-	voteCount: number;
-}
 
-const DUMMYCANDIDATERANKING:Candidate[] = [
-  { name: '김다희', voteCount: 10 },
-  { name: '김동혁', voteCount: 9 },
-  { name: '김민영', voteCount: 8 },
-  { name: '김수현', voteCount: 7 },
-  { name: '김승완', voteCount: 6 },
-  { name: '송은수', voteCount: 5 },
-  { name: '안혜연', voteCount: 4 },
-  { name: '이나현', voteCount: 3 },
-  { name: '이지인', voteCount: 2 },
-  { name: '조유담', voteCount: 1 },
-];
 
 export default function Page() {
   const router = useRouter();
+  const [candidateRanking, setCandidateRanking] = useState<Candidate[]>([]);
+  const rankingIndexes = useRanking(candidateRanking);
+
+  useEffect(() => {
+    async function getPartResultData() {
+      const response = await fetch('/api/vote/fe-result');
+      const data: Candidate[] = await response.json();
+      setCandidateRanking(data);
+    }
+    getPartResultData();
+  }, []);
+
   return (
-    <div className="flex flex-col w-full h-full relative px-5 pt-[120px] items-center">
+    <div className="flex flex-col w-full h-full relative px-[30px] pt-[120px] items-center">
       <Header />
       <ArrowBackSVG
         className="absolute top-[120px] left-[25px] cursor-pointer"
@@ -33,21 +32,26 @@ export default function Page() {
           router.back();
         }}
       />
-      <div className='w-[120px] h-[120px] bg-white flex justify-center items-center rounded-full text-[24px] font-semibold relative'>
-        <div className='absolute top-[-24px] left-[-18px]'>
+      <div className="w-[110px] h-[120px] bg-white flex justify-center items-center rounded-full text-[24px] font-semibold relative">
+        <div className="absolute top-[-24px] left-[-18px]">
           <CrownSVG />
         </div>
-        {DUMMYCANDIDATERANKING[0].name}
+        {candidateRanking[0] && candidateRanking[0].leaderName}
       </div>
-      <div className="my-[10px]">{DUMMYCANDIDATERANKING[0].voteCount}표</div>
-      <section className='w-full bg-white rounded-t-xl overflow-y-scroll'>
-        {DUMMYCANDIDATERANKING.slice(1).map((candidate,idx) => {
+      <div className="my-[10px]">
+        {candidateRanking[0] && candidateRanking[0].voteCount}표
+      </div>
+      <section className="w-full bg-white rounded-t-xl overflow-y-scroll">
+        {candidateRanking.slice(1).map((candidate, idx) => {
           return (
-            <div key={candidate.name} className="flex justify-between items-center w-[100%] h-[70px] text-[28px] px-[30px] border-b border-gray-200">
-              <div className='basis-[40px] flex justify-center'>{idx+2}</div>
-              <div className="flex items-center">
-                {candidate.name}
+            <div
+              key={candidate.leaderName}
+              className="flex justify-between items-center w-[100%] h-[60px] text-[24px] px-[30px] border-b border-gray-200"
+            >
+              <div className="basis-[40px] flex justify-center">
+                {rankingIndexes[idx + 1]}
               </div>
+              <div className="flex items-center">{candidate.leaderName}</div>
               <div>{candidate.voteCount}표</div>
             </div>
           );
