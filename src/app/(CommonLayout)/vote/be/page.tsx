@@ -3,7 +3,6 @@ import ArrowBackSVG from '@public/arrowBack.svg';
 import { Header } from '@components/all/Header';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { voteFetchWithToken } from '@apis/fetchAPI';
 
 const CandidateName = [
   '임형준',
