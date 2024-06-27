@@ -14,8 +14,9 @@ export default function Page() {
         <div className="font-semibold">본인에게 투표할 수 없습니다!</div>
         <button
           className="bg-themeColor text-white	 text-[18px] rounded-[10px] border-none w-[80px] h-[40px]"
-          onClick={() => {
-            router.push('/');
+          onClick={(event) => {
+            router.back();
+            event.stopPropagation();
           }}
         >
           확인

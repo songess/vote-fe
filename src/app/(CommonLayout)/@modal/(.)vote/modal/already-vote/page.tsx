@@ -14,8 +14,9 @@ export default function Page() {
         <div className="font-semibold">투표는 한 번만 가능합니다.</div>
         <button
           className="bg-themeColor text-white	 text-[18px] rounded-[10px] border-none w-[80px] h-[40px]"
-          onClick={() => {
-            router.push('/');
+          onClick={(event) => {
+            router.back();
+            event.stopPropagation();
           }}
         >
           확인

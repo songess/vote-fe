@@ -11,11 +11,14 @@ export default function Page() {
       }}
     >
       <div className="w-[50%] h-[120px] min-w-[300px] bg-white rounded-xl flex flex-col justify-center items-center gap-[20px]">
-        <div className="font-semibold">로그인하지 않은 사용자는 투표할 수 없습니다!</div>
+        <div className="font-semibold">
+          로그인하지 않은 사용자는 투표할 수 없습니다!
+        </div>
         <button
           className="bg-themeColor text-white	 text-[18px] rounded-[10px] border-none w-[80px] h-[40px]"
-          onClick={() => {
-            router.push('/');
+          onClick={(event) => {
+            router.back();
+            event.stopPropagation();
           }}
         >
           확인
